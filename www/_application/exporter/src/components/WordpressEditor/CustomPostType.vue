@@ -69,16 +69,32 @@ export default {
         }
     },
 
-    computed: {
+    watch: {
         entityName() {
-            return this.entity.value.attributes[0].value;
-            /*
-            console.log(this.entity);
-            for(let attrubte of this.entity.value.attributes) {
-                if(attribute.)
+            console.log(this);
+        }
+    },
+
+    computed: {
+        entityName: {
+            get: function() {
+                console.log(this.entity);
+                return this.entity.getAttribute('label');
+                /*
+                console.log(this.entity);
+                for(let attrubte of this.entity.value.attributes) {
+                    if(attribute.)
+                }
+                return this.entity.value;
+                */
+            },
+            set: function(value) {
+
+                this.entity.setAttribute('label', value);
+                console.log(this.entity);
+                console.log(this.entity.getAttribute('label'));
+                this.$schemaBuilder.refreshGraph();
             }
-            return this.entity.value;
-            */
         }
     },
 

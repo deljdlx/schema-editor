@@ -8,11 +8,9 @@ class EntityItem extends GraphItem
 
   _style = '';
 
-
-
-
-
   _entityType = 'entity';
+
+
 
 
 
@@ -41,20 +39,36 @@ class EntityItem extends GraphItem
     // graph.getModel().beginUpdate();
 
 
-    let entity = super.render(parent);
-    entity._entityType =  this._entityType;
+    let cell = super.render(parent);
 
+    let doc = mxUtils.createXmlDocument();
+    let nodeValue = doc.createElement('MyNode')
+    nodeValue.setAttribute('label', this.getAttribute('label'));
+    cell.setValue(nodeValue);
+    cell._entityType = 'entity';
 
 
     for(let field of this._fields) {
       let attribute = new GraphItem(field.caption);
-      attribute.render(entity);
+      attribute.render(cell);
     };
+
+
+    // cell.__proto__ = EntityItem.prototype;
+    // cell.constructor.call(cell);
+
+
+    /*
+    let entity = new EntityItem();
+    entity.loadFromCell(cell);
+    entity._entityType =  this._entityType;
+    */
+
 
     // graph.getModel().endUpdate();
     // graph.refresh();
 
-    return entity;
+    return cell;
   }
 
 

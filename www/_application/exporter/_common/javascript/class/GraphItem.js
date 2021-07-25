@@ -44,6 +44,13 @@ class GraphItem extends mxCell
     this.setValue(nodeValue);
   }
 
+  loadFromCell(cell) {
+    for(let attribute in cell) {
+      this[attribute] = cell[attribute];
+    }
+    return this;
+  }
+
 
   getCaption() {
     return this.getAttribute('label');

@@ -18,6 +18,7 @@ class SchemaBuilder extends App
   _listeners = {
     entityClick: [],
     clearSelection:  [],
+    entityLabelChanged: [],
   };
 
   constructor(editor, container, lightbox, configuration) {
@@ -39,11 +40,32 @@ class SchemaBuilder extends App
     this.getGraph().refresh();
   }
 
+  select(cell) {
+    this.getGraph().setSelectionCell(cell);
+  }
+
 
 
   startListeners() {
+
+
+    this.getGraph().addListener(mxEvent.LABEL_CHANGED, (sender, evt) => {
+
+      let cell = evt.getProperty("cell");
+
+      if(cell) {
+        for(let listener of this._listeners['entityLabelChanged']) {
+          listener(cell);
+        }
+      }
+
+      console.log(cell);
+
+    });
+
+
     this.getGraph().addListener(mxEvent.CLICK, (sender, evt) => {
-      var cell = evt.getProperty("cell"); // cell may be null
+      let cell = evt.getProperty("cell"); // cell may be null
 
       if (cell != null) {
         // SelectGraphCell(cell);

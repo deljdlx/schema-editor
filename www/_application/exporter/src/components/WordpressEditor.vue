@@ -30,13 +30,33 @@
                 <v-icon>mdi-content-save</v-icon>
             </v-btn>
         </v-btn-toggle>
-
-
-
       </div>
 
       <div class="panel-content">
-          <CustomPostType v-if="this.entity" :entity="entity" @newCustomTaxonomy="this.addCustomTaxonomy"></CustomPostType>
+
+
+          <template>
+            <v-row>
+              <v-col cols="3">
+                <v-treeview
+                  :items="items"
+                  open-all
+                  :active.sync="active"
+                  :open.sync="open"
+                  activatable
+                  open-on-click
+                ></v-treeview>
+              </v-col>
+              <v-divider vertical></v-divider>
+              <v-col cols="9">
+                <CustomPostType v-if="this.entity" :entity="entity" @newCustomTaxonomy="this.addCustomTaxonomy"></CustomPostType>
+              </v-col>
+            </v-row>
+          </template>
+
+
+
+
 
       </div>
 
@@ -66,6 +86,74 @@ const WordpressExporter = Vue.extend({
   data() {
 
     return {
+
+      active:[],
+
+
+      items: [
+        {
+          id: 1,
+          name: 'Custom post types :',
+          children: [
+            /*
+            { id: 2, name: 'Calendar : app' },
+            { id: 3, name: 'Chrome : app' },
+            { id: 4, name: 'Webstorm : app' },
+            */
+          ],
+        },
+        {
+          id: 5,
+          name: 'Taxonomies :',
+          children: [
+            /*
+            {
+              id: 6,
+              name: 'vuetify :',
+              children: [
+                {
+                  id: 7,
+                  name: 'src :',
+                  children: [
+                    { id: 8, name: 'index : ts' },
+                    { id: 9, name: 'bootstrap : ts' },
+                  ],
+                },
+              ],
+            },
+            {
+              id: 10,
+              name: 'material2 :',
+              children: [
+                {
+                  id: 11,
+                  name: 'src :',
+                  children: [
+                    { id: 12, name: 'v-btn : ts' },
+                    { id: 13, name: 'v-card : ts' },
+                    { id: 14, name: 'v-window : ts' },
+                  ],
+                },
+              ],
+            },*/
+          ],
+        },
+        {
+          id: 15,
+          name: 'User roles :',
+          children: [
+            /*
+            { id: 16, name: 'October : pdf' },
+            { id: 17, name: 'November : pdf' },
+            { id: 18, name: 'Tutorial : html' },
+            */
+          ],
+        },
+      ],
+
+
+
+
 
       roles: [],
       customPostTypes: [],
@@ -112,11 +200,64 @@ const WordpressExporter = Vue.extend({
       this.entity = null;
     });
 
+    this.$schemaBuilder.addEventListener('entityLabelChanged', (entity) => {
+
+      let node = this.findInCustomPostTypes(entity.id);
+      if(node) {
+        node.name = entity.getAttribute('label');
+      }
+
+      console.log(node);
+    });
 
   },
 
 
+  computed: {
+      selected () {
+
+        console.log('%c' + 'selected', 'color: #0bf; font-size: 1rem; background-color:#fff');
+        console.log(this.active);
+
+        const id = this.active[0];
+        let node = this.items[0].children.find(item => item.id === id);
+
+
+        if(node) {
+          this.$schemaBuilder.select(node.cell);
+        }
+
+        return this.active;
+      },
+  },
+
+  watch: {
+      selected () {
+        // this.entity = node.cell;
+        // console.log(this.active);
+
+        const id = this.active[0];
+        // let node = this.items[0].children.find(item => item.id === id);
+        let node = this.findInCustomPostTypes(id);
+
+
+        if(node) {
+          this.$schemaBuilder.select(node.cell);
+          this.entity = node.cell
+        }
+
+
+        return 'test';
+      },
+  },
+
+
   methods: {
+
+    findInCustomPostTypes(id) {
+        return this.items[0].children.find(item => item.id === id);
+
+    },
 
     showEntity() {
       console.log(this.entity);
@@ -165,6 +306,18 @@ const WordpressExporter = Vue.extend({
       this.customPostTypes.push(entity);
 
       this.$schemaBuilder.getGraph().setSelectionCell(entity);
+
+      const node = {
+        id: entity.id,
+        // name: 'toto', //entity.getCaption()
+        name: entity.getAttribute('label'),
+        cell: entity,
+      };
+
+
+      this.items[0].children.push(node);
+
+      // entity.node = node;
 
 
     },
