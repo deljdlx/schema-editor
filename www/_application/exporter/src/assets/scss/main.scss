@@ -1,0 +1,33 @@
+$color-highlited: #f0f;
+$color-lightest: #fff;
+$color-border: #eee;
+$statusBarHeight: 30px;
+$gutter: 1rem;
+
+
+@import './panel';
+@import './code-editor';
+
+
+
+
+
+
+
+.v-application {
+    overflow:hidden;
+}
+
+.v-application::-webkit-scrollbar  {
+    display: none;
+}
+
+
+#layout {
+    width: 100vw;
+    left:0;
+    top : 0;
+    height: calc(100vh);
+    position : absolute;
+    overflow: hidden;
+  }

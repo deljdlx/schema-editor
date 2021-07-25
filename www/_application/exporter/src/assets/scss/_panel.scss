@@ -1,0 +1,28 @@
+.panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  .panel-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    .toolbar {
+      display: flex;
+      padding: 4px;
+      background-color: #323233;
+
+      .v-btn.v-item--active.v-btn--active.v-btn--text {
+        background-color: $color-highlited;
+      }
+    }
+
+    .panel-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+  }
+}

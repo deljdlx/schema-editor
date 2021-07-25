@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JDLX Schema builder demo</title>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<link rel="stylesheet" type="text/css" href="js/croppie/croppie.min.css">
+	<link rel="stylesheet" type="text/css" href="styles/grapheditor.css">
+</head>
+
+
+
+<body>
+
+<a style="position: absolute; right:0; top:0; z-index: 100" href="https://github.com/deljdlx/schema-editor"><img loading="lazy" width="149" height="149" src="https://github.blog/wp-content/uploads/2008/12/forkme_right_red_aa0000.png?resize=149%2C149" class="attachment-full size-full" alt="Fork me on GitHub" data-recalc-dims="1"></a>
+
+
+
+<div class="test-toolbar">
+	<button id="trigger2">Test loading schema</button>
+	<button id="trigger3">Download as image</button>
+	<button id="trigger-xml">Download as xml</button>
+	<button id="trigger">Test retrieving XML data</button>
+</div>
+
+<div class="geEditor" style="position: absolute; left:0; top :3rem; width: 100vw; height: calc(100vh - 3rem)"></div>
+
+
+<script src="_custom/configuration.js"></script>
+<script src="_custom/javascript/functions.js"></script>
+<script src="_custom/javascript/initialize.js"></script>
+<script src="./_custom/javascript/class/SchemaBuilder.js"></script>
+<script src="./_custom/javascript/class/AjaxClient.js"></script>
+
+
+
+
+<!-- this css has bo be here else create some conflicts-->
+<link rel="stylesheet" type="text/css" href="_custom/css/editor.css">
+
+
+
+<script type="text/javascript">
+
+
+SchemaBuilder.main(null, () => {
+	new SchemaBuilder(
+		new Editor(false),
+		document.querySelector('.geEditor'),
+		null,
+		{
+			savePNGURL: BASE_URI + '/_application/index.php'
+		}
+	);
+
+	loadWelcomeScreen();
+});
+
+
+
+async function loadWelcomeScreen() {
+	let schemaBuilder = SchemaBuilder.getInstance();
+	schemaBuilder.loadFromURL('_fixture/hello.drawio');
+}
+
+document.querySelector('#trigger-xml').addEventListener('click', (event) => {
+	let app = SchemaBuilder.getInstance();
+	app.getFile().saveFile('test.drawio');
+	return;
+});
+
+
+document.querySelector('#trigger3').addEventListener('click', (event) => {
+	let app = SchemaBuilder.getInstance();
+	app.getFile().saveFile('untitled.drawio.png');
+	return;
+});
+
+
+document.querySelector('#trigger2').addEventListener('click', (event) => {
+
+	let schemaBuilder = SchemaBuilder.getInstance();
+	schemaBuilder.loadFromURL('_fixture/vuejs.drawio');
+});
+
+
+document.querySelector('#trigger').addEventListener('click', (event) => {
+	let app = SchemaBuilder.getInstance();
+	alert(app.getXML().innerHTML);
+	// console.log(app.getXML());
+});
+
+</script>
+</body>
+</html>
+
+

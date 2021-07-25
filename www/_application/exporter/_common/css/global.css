@@ -1,0 +1,28 @@
+:root {
+  --right-panel-width: 1000px;
+}
+
+
+
+body, html {
+  overflow: hidden !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
+}
+
+
+div.picker { z-index: 10007; }
+
+
+*, ::before, ::after  {
+  box-sizing: content-box;
+}
+
+#app *, #app ::before, #app ::after  {
+  box-sizing: border-box;
+}
+
+
+
+
+

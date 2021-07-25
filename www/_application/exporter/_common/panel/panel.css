@@ -1,0 +1,63 @@
+.jdlx-panel__wrapper {
+  position: relative;
+    height: 100%;
+  width: 100%;
+}
+
+.jdlx-panel__wrapper--vertical {
+  display: flex;
+}
+
+
+.jdlx-panel__wrapper--horizontal {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+
+
+.jdlx-panel__panel {
+  position: relative;
+}
+
+
+.jdlx-panel__panel--second {
+  position: relative;
+  background-color: #fff;
+  flex-grow: 1;
+}
+
+.jdlx-panel__wrapper--vertical .jdlx-panel__panel--second {
+  padding-left: 10px;
+}
+
+.jdlx-panel__wrapper--horizontal .jdlx-panel__panel--second {
+  padding-top: 10px;
+}
+
+
+
+.jdlx-panel__handler {
+  background: #f0f;
+  z-index:1000;
+  position: absolute;
+}
+
+
+
+.jdlx-panel__wrapper--vertical .jdlx-panel__handler {
+  width: 10px;
+  height: 100%;
+  top: 0;
+  left: 0;
+  cursor: col-resize;
+}
+
+.jdlx-panel__wrapper--horizontal .jdlx-panel__handler {
+  height:10px;
+  width: 100%;
+  top: 0;
+  left: 0;
+  cursor: row-resize;
+}
