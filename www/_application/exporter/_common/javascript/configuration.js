@@ -68,7 +68,7 @@ urlParams['pwa'] = 0;
 let BASE_URI = '';
 
 if(document.location.toString().match(/localhost/)) {
-  BASE_URI = '//localhost/drawio/www/';
+  BASE_URI = '//localhost/_shared/drawio/www/';
 }
 else {
   BASE_URI = '//' + document.location.hostname;

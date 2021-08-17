@@ -19,6 +19,7 @@ class SchemaBuilder extends App
     entityClick: [],
     clearSelection:  [],
     entityLabelChanged: [],
+    entityMoved: [],
   };
 
   constructor(editor, container, lightbox, configuration) {
@@ -45,12 +46,32 @@ class SchemaBuilder extends App
   }
 
 
+  clearSelection() {
+    this.getGraph().clearSelection();
+  }
+
 
   startListeners() {
 
 
-    this.getGraph().addListener(mxEvent.LABEL_CHANGED, (sender, evt) => {
+    this.getGraph().addListener(mxEvent.CELLS_MOVED, (sender, evt) => {
 
+      console.log("Cell moved");
+
+      console.log(evt);
+
+      let cells = evt.getProperty("cells");
+
+      if(cells.length) {
+        for(let listener of this._listeners['entityMoved']) {
+          listener(cells[0]);
+        }
+      }
+    });
+
+
+
+    this.getGraph().addListener(mxEvent.LABEL_CHANGED, (sender, evt) => {
       let cell = evt.getProperty("cell");
 
       if(cell) {
@@ -58,9 +79,6 @@ class SchemaBuilder extends App
           listener(cell);
         }
       }
-
-      console.log(cell);
-
     });
 
 
@@ -78,10 +96,13 @@ class SchemaBuilder extends App
       }
       else {
         // console.log(this.getGraph());
-        this.getGraph().selectionModel.clear(cell);
-        for(let listener of this._listeners['clearSelection']) {
-          listener(cell);
-        }
+
+          if(!evt.consumed) {
+            this.getGraph().selectionModel.clear(cell);
+            for(let listener of this._listeners['clearSelection']) {
+              listener(cell);
+            }
+          }
       }
       evt.consume();
     });

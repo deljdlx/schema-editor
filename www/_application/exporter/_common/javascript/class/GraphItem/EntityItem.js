@@ -45,7 +45,7 @@ class EntityItem extends GraphItem
     let nodeValue = doc.createElement('MyNode')
     nodeValue.setAttribute('label', this.getAttribute('label'));
     cell.setValue(nodeValue);
-    cell._entityType = 'entity';
+    cell._entityType = this._entityType;
 
 
     for(let field of this._fields) {

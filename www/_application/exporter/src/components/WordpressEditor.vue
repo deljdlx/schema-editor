@@ -49,7 +49,7 @@
               </v-col>
               <v-divider vertical></v-divider>
               <v-col cols="9">
-                <CustomPostType v-if="this.entity" :entity="entity" @newCustomTaxonomy="this.addCustomTaxonomy"></CustomPostType>
+                <CustomPostType v-if="this.entity" :entity="entity" @newCustomTaxonomy="this.addCustomTaxonomy" @entityLabelChanged="handleEntityLabelChanged"></CustomPostType>
               </v-col>
             </v-row>
           </template>
@@ -87,66 +87,26 @@ const WordpressExporter = Vue.extend({
 
     return {
 
-      active:[],
-
+      active: [],
+      open: [0,1,2],
 
       items: [
         {
           id: 1,
           name: 'Custom post types :',
           children: [
-            /*
-            { id: 2, name: 'Calendar : app' },
-            { id: 3, name: 'Chrome : app' },
-            { id: 4, name: 'Webstorm : app' },
-            */
           ],
         },
         {
           id: 5,
           name: 'Taxonomies :',
           children: [
-            /*
-            {
-              id: 6,
-              name: 'vuetify :',
-              children: [
-                {
-                  id: 7,
-                  name: 'src :',
-                  children: [
-                    { id: 8, name: 'index : ts' },
-                    { id: 9, name: 'bootstrap : ts' },
-                  ],
-                },
-              ],
-            },
-            {
-              id: 10,
-              name: 'material2 :',
-              children: [
-                {
-                  id: 11,
-                  name: 'src :',
-                  children: [
-                    { id: 12, name: 'v-btn : ts' },
-                    { id: 13, name: 'v-card : ts' },
-                    { id: 14, name: 'v-window : ts' },
-                  ],
-                },
-              ],
-            },*/
           ],
         },
         {
           id: 15,
           name: 'User roles :',
           children: [
-            /*
-            { id: 16, name: 'October : pdf' },
-            { id: 17, name: 'November : pdf' },
-            { id: 18, name: 'Tutorial : html' },
-            */
           ],
         },
       ],
@@ -183,21 +143,46 @@ const WordpressExporter = Vue.extend({
 
     this.$schemaBuilder.addEventListener('entityClick', (entity) => {
       if(entity._entityType) {
+        console.log('clicked on entity');
+      }
+      else {
+        entity = entity.parent;
+      }
 
+      if(entity._entityType == 'entity') {
+        this.entity = entity;
+        this.active = [
+          entity.id
+        ];
+      }
+      else if(entity._entityType == 'taxonomy') {
+        console.log('clicked on taxonomy');
+      }
+
+
+
+    });
+
+
+    this.$schemaBuilder.addEventListener('entityMoved', (entity) => {
+
+      if(entity._entityType) {
         if(entity._entityType == 'entity') {
           this.entity = entity;
+          this.active = [
+            entity.id
+          ];
         }
       }
       else {
         this.entity = entity.parent;
       }
-
-      this.showEntity(entity);
     });
 
 
     this.$schemaBuilder.addEventListener('clearSelection', () => {
       this.entity = null;
+      this.active = [];
     });
 
     this.$schemaBuilder.addEventListener('entityLabelChanged', (entity) => {
@@ -206,44 +191,37 @@ const WordpressExporter = Vue.extend({
       if(node) {
         node.name = entity.getAttribute('label');
       }
-
-      console.log(node);
     });
-
   },
 
 
   computed: {
       selected () {
 
-        console.log('%c' + 'selected', 'color: #0bf; font-size: 1rem; background-color:#fff');
-        console.log(this.active);
-
-        const id = this.active[0];
-        let node = this.items[0].children.find(item => item.id === id);
-
-
-        if(node) {
-          this.$schemaBuilder.select(node.cell);
-        }
-
-        return this.active;
+        // const id = this.active[0];
+        // let node = this.items[0].children.find(item => item.id === id);
+        return this.active[0];
       },
   },
 
   watch: {
       selected () {
-        // this.entity = node.cell;
-        // console.log(this.active);
-
         const id = this.active[0];
-        // let node = this.items[0].children.find(item => item.id === id);
+
+
+        console.log(id);
+
         let node = this.findInCustomPostTypes(id);
 
+        console.log(node);
 
         if(node) {
           this.$schemaBuilder.select(node.cell);
           this.entity = node.cell
+        }
+        else {
+          this.entity = null;
+          this.$schemaBuilder.clearSelection();
         }
 
 
@@ -254,18 +232,22 @@ const WordpressExporter = Vue.extend({
 
   methods: {
 
+    handleEntityLabelChanged(data) {
+      let node = this.findInCustomPostTypes(data.entity.id);
+      if(node) {
+        node.name = data.entity.getAttribute('label');
+      }
+    },
+
     findInCustomPostTypes(id) {
         return this.items[0].children.find(item => item.id === id);
 
     },
 
-    showEntity() {
-      console.log(this.entity);
-    },
-
     async addCustomRole() {
       let role = this.$schemaBuilder.insertRole();
       this.roles.push(role);
+      this.addNode(role);
     },
 
     async addCustomTaxonomy(event) {
@@ -294,9 +276,10 @@ const WordpressExporter = Vue.extend({
         this.relations.push(relation);
 
       }
-
-
       this.$schemaBuilder.refreshGraph();
+
+      this.addNode(taxonomy);
+
     },
 
     async addCustomPostType() {
@@ -307,18 +290,43 @@ const WordpressExporter = Vue.extend({
 
       this.$schemaBuilder.getGraph().setSelectionCell(entity);
 
-      const node = {
-        id: entity.id,
-        // name: 'toto', //entity.getCaption()
-        name: entity.getAttribute('label'),
-        cell: entity,
-      };
+      for(let attribute of entity.children) {
+        let data = {
+          id: attribute.id,
+          name: attribute.getAttribute('label'),
+          cell: attribute,
+        }
+        // node.children.push(data);
+        console.log(data);
+      }
+
+     this.addNode(entity);
+    },
 
 
-      this.items[0].children.push(node);
+    addNode(mxCell) {
 
-      // entity.node = node;
+      let index = 0;
+      let node = {};
 
+      node = {
+        id: mxCell.id,
+        name: mxCell.getAttribute('label'),
+        cell: mxCell,
+        children: []
+      }
+
+      if(mxCell._entityType == 'entity') {
+        index = 0;
+      }
+      else if(mxCell._entityType == 'taxonomy') {
+        index = 1;
+      }
+      else if(mxCell._entityType == 'role') {
+        index = 2;
+      }
+
+      this.items[index].children.push(node);
 
     },
 
@@ -364,7 +372,7 @@ export default WordpressExporter;
 
 .entity-container {
 
-  background-color: $color-lightest;
+  // background-color: $color-lightest;
 
   margin: $gutter;
   padding: $gutter;

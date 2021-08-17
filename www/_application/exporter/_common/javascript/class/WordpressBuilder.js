@@ -48,7 +48,7 @@ class WordpressBuilder extends SchemaBuilder
   insertRole(name = 'Role', fields = null) {
     if(fields == null) {
       fields = [
-        // 'New role',
+        'Name',
       ];
     }
 
@@ -84,14 +84,19 @@ class WordpressBuilder extends SchemaBuilder
 
     if(fields == null) {
       fields = [
-        // 'Name'
+        'name',
+        'description',
       ];
     }
 
-    let entity = this.createItem(name, fields)
-    entity.setFillColor(this._colors.taxonomy.fill);
-    entity.setEntityType('taxonomy');
-    return entity.render();
+    let model = this.createItem(name, fields)
+    model.setFillColor(this._colors.taxonomy.fill);
+    model.setEntityType('taxonomy');
+    let entity = model.render();
+
+    this.setUnmodified();
+
+    return entity;
   }
 
 }

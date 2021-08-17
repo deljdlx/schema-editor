@@ -6,7 +6,7 @@
             <v-text-field v-model="caption" label=""></v-text-field>
         </v-col>
         <v-col cols="4">
-            <v-select :items="fieldTypes" label="Standard"></v-select>
+            <v-select :items="fieldTypes" label="Map to"></v-select>
         </v-col>
     </v-row>
 
